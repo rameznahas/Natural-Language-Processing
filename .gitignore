@@ -1,0 +1,9 @@
+Release
+Debug
+*/Release
+*/Debug
+*.sln
+*.vs
+*.doc
+*.docx
+*.zip
