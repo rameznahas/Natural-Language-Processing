@@ -1,7 +1,6 @@
-<!-- ![alt text](https://github.com/rameznahas/Indonesian-Dot-Puzzle/blob/master/Project%20instructions/COMP_472_2020_Winter_Project_1-1.png)
-![alt text](https://github.com/rameznahas/Indonesian-Dot-Puzzle/blob/master/Project%20instructions/COMP_472_2020_Winter_Project_1-2.png)
-![alt text](https://github.com/rameznahas/Indonesian-Dot-Puzzle/blob/master/Project%20instructions/COMP_472_2020_Winter_Project_1-3.png)
-![alt text](https://github.com/rameznahas/Indonesian-Dot-Puzzle/blob/master/Project%20instructions/COMP_472_2020_Winter_Project_1-4.png)
-![alt text](https://github.com/rameznahas/Indonesian-Dot-Puzzle/blob/master/Project%20instructions/COMP_472_2020_Winter_Project_1-5.png)
-![alt text](https://github.com/rameznahas/Indonesian-Dot-Puzzle/blob/master/Project%20instructions/COMP_472_2020_Winter_Project_1-6.png)
-![alt text](https://github.com/rameznahas/Indonesian-Dot-Puzzle/blob/master/Project%20instructions/COMP_472_2020_Winter_Project_1-7.png) -->
+![alt text](https://github.com/rameznahas/Natural-Language-Processing/blob/master/Project%20Instructions/COMP_472_2020_Winter_Project_2-v2-1.png)
+![alt text](https://github.com/rameznahas/Natural-Language-Processing/blob/master/Project%20Instructions/COMP_472_2020_Winter_Project_2-v2-2.png)
+![alt text](https://github.com/rameznahas/Natural-Language-Processing/blob/master/Project%20Instructions/COMP_472_2020_Winter_Project_2-v2-3.png)
+![alt text](https://github.com/rameznahas/Natural-Language-Processing/blob/master/Project%20Instructions/COMP_472_2020_Winter_Project_2-v2-4.png)
+![alt text](https://github.com/rameznahas/Natural-Language-Processing/blob/master/Project%20Instructions/COMP_472_2020_Winter_Project_2-v2-5.png)
+![alt text](https://github.com/rameznahas/Natural-Language-Processing/blob/master/Project%20Instructions/COMP_472_2020_Winter_Project_2-v2-6.png)
