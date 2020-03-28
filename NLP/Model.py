@@ -1,4 +1,4 @@
-import re, sys, time
+import re, sys, time, pickle
 from math import log10
 
 class Model():
@@ -10,10 +10,8 @@ class Model():
 	link_pattern = re.compile(r"(http|[@#])\S+")
 	cc_pattern = re.compile(r"\b[cC]{2}\b")
 	rt_pattern = re.compile(r"\b[rR][tT]\b")
-	extra_ws_pattern = re.compile(r" {2,}")
-	############################################later for BYOM#############################################################
-	#BOS_pattern = re.compile(u"^[^\U00000041-\U0000005A\U00000061-\U0000007A\U000000C0-\U000000D6\U000000D8-\U000000F6\U000000F8-\U000000FF]+")
-	#EOS_pattern = re.compile(u"[^\U00000041-\U0000005A\U00000061-\U0000007A\U000000C0-\U000000D6\U000000D8-\U000000F6\U000000F8-\U000000FF]+$")
+	punctuation_pattern = re.compile(r"[^\w\s]|_")
+	extra_ws_pattern = re.compile(r"\s{2,}")
 
 	def __init__(self, v, n, delta, training_file, testing_file):
 		"""
@@ -48,9 +46,6 @@ class Model():
 			"en": {"tn": 0, "fp": 0, "fn": 0, "tp": 0}, 
 			"pt": {"tn": 0, "fp": 0, "fn": 0, "tp": 0}
 			}
-		#self.supplement1_lower, self.supplement1_upper = 192, 214
-		#self.supplement2_lower, self.supplement2_upper = 216, 246
-		#self.supplement3_lower, self.supplement3_upper = 248, 255
 		self.__set_vocab()
 		self.ngrams_total_increment = self.delta * self.vocab_size ** (self.n - 1)
 		self.trace_output = ''
@@ -84,6 +79,18 @@ class Model():
 				if char.isalpha():
 					self.vocab_size += 1
 
+		else:
+			diacritics = r"\U000000C0-\U000000C3\U000000C7-\U000000CA\U000000CD\U000000CF\U000000D1-\U000000D5\U000000DA\U000000DC\U000000E1-\U000000E4\U000000E7-\U000000EA\U000000ED\U000000EF\U000000F1-\U000000F5\U000000FA\U000000FC"
+			vocab = r"[a-zA-Z" + diacritics
+			diacritics_count = 34
+			self.vocab_size = 2 + z - a + Z - A + diacritics_count
+
+			if self.v == 3:
+				vocab += "]"
+			else:
+				vocab += " ]"
+				self.vocab_size += 1
+			
 		self.vocab_pattern = re.compile(r"(?=(" + vocab + "{" + str(self.n) + "}))")
 
 	def __clean(self, tweet):
@@ -103,8 +110,9 @@ class Model():
 		tweet = self.link_pattern.sub('', tweet)
 		tweet = self.cc_pattern.sub('', tweet)
 		tweet = self.rt_pattern.sub('', tweet)
+		tweet = self.punctuation_pattern.sub(' ', tweet)
 		tweet = self.extra_ws_pattern.sub(' ', tweet)
-		tweet = tweet.strip() + '\n'
+		tweet = ' ' + tweet.strip() + ' '
 
 		return tweet
 
@@ -148,7 +156,7 @@ class Model():
 			# get the list of all possible ngrams from the tweet
 			ngrams = self.vocab_pattern.findall(tweet)
 			for ngram in ngrams:
-				if self.v < 2 or ngram.isalpha():
+				if self.v != 2 or ngram.isalpha():
 					# increment the count of this ngram
 					self.ngrams[lang][ngram] = self.ngrams[lang].get(ngram, 0) + 1
 					# increment the count of ngrams starting with ngram[0]
@@ -217,9 +225,9 @@ class Model():
 		tweet_count : int
 			number of tweets in the testing file
 		"""
-		file = open("trace_" + str(self.v) + "_" + str(self.n) + "_" + str(self.delta) + ".txt", 'w', encoding="utf-8")
-		file.write(self.trace_output)
-		file.close
+		#file = open("trace_" + str(self.v) + "_" + str(self.n) + "_" + str(self.delta) + ".txt", 'w', encoding="utf-8")
+		#file.write(self.trace_output)
+		#file.close
 
 		precision = {"eu": 0, "ca": 0, "gl": 0, "es": 0, "en": 0, "pt": 0}
 		recall = {"eu": 0, "ca": 0, "gl": 0, "es": 0, "en": 0, "pt": 0}
@@ -255,8 +263,12 @@ class Model():
 		eval_output += str(number.format(f1["eu"])) + "  " + str(number.format(f1["ca"])) + "  " + str(number.format(f1["gl"])) + "  " + str(number.format(f1["es"])) + "  " + str(number.format(f1["en"])) + "  " + str(number.format(f1["pt"])) + '\n'
 		eval_output += str(number.format(macro_f1)) + "  " + str(number.format(weighted_avg_f1))
 
-		file = open("eval_" + str(self.v) + "_" + str(self.n) + "_" + str(self.delta) + ".txt", 'w', encoding="utf-8")
-		file.write(eval_output)
+		#file = open("eval_" + str(self.v) + "_" + str(self.n) + "_" + str(self.delta) + ".txt", 'w', encoding="utf-8")
+		#file.write(eval_output)
+		#file.close()
+
+		file = open("test.txt", 'a', encoding="utf-8")
+		file.write(str(self.v) + "\t\t" + str(self.n) + "\t\t" + str(self.delta) + "\t\t" + str(number.format(self.correct_classifications * 100 / tweet_count)) + "%\n")
 		file.close()
 
 	def __argmax(self, tweet):
@@ -286,7 +298,7 @@ class Model():
 
 			try:
 				for ngram in ngrams:
-					if self.v < 2 or ngram.isalpha():
+					if self.v != 2 or ngram.isalpha():
 						smoothed_prob = self.delta / self.ngrams_total[lang].get(ngram[0], self.ngrams_total_increment)
 						likelihood += log10(self.ngrams[lang].get(ngram, smoothed_prob))
 			except:
@@ -323,16 +335,29 @@ class Model():
 		self.__generate_output_files(len(file_buffer))
 
 if __name__ == "__main__":
-	model = Model(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), sys.argv[4], sys.argv[5])
-	model.train()
-	model.test()
+	#model = Model(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), sys.argv[4], sys.argv[5])
+	#model.train()
+	#model.test()
 
 	###########################################testing/debugging#########################################
-	#performance = ''
+	file = open("test.txt", 'w', encoding="utf-8")
+	file.write("v\t\tn\t\td\t\taccuracy\n")
+	file.close()
+	performance = ''
 
-	#for v in range(3):
+	d = 0.001
+	while d < 0.1:
+		model = Model(4, 3, d, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
+		start = time.time()
+		model.train()
+		model.test()
+		end = time.time()
+		performance += str(model.v) + " " + str(model.n) + " " + str(model.delta) + "\ttime: " + str(end - start) + '\n'
+		d += 0.001
+
+	#for v in range(3, 5):
 	#	for n in range(1, 4):
-	#		model = Model(v, n, 0, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
+	#		model = Model(v, n, 0.0, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
 	#		start = time.time()
 	#		model.train()
 	#		model.test()
@@ -351,6 +376,6 @@ if __name__ == "__main__":
 	#		end = time.time()
 	#		performance += str(v) + " " + str(n) + " " + str(model.delta) + "\ttime: " + str(end - start) + '\n'
 
-	#file = open("optim_perf.txt", 'w', encoding="utf-8")
-	#file.write(performance)
-	#file.close()
+	file = open("optim_perf.txt", 'w', encoding="utf-8")
+	file.write(performance)
+	file.close()
