@@ -116,19 +116,6 @@ class Model():
 
 		return tweet
 
-	def __smooth_ngrams(self):
-		"""
-		Adds the smoothing value self.delta to the ngram tables
-		"""
-		for lang in self.ngrams:
-			# smooth the individual ngrams
-			for ngram in self.ngrams[lang]:
-				self.ngrams[lang][ngram] += self.delta
-
-			# smooth the total
-			for total in self.ngrams_total[lang]:
-				self.ngrams_total[lang][total] += self.ngrams_total_increment
-
 	def train(self):
 		"""
 		Trains the model using the self.training_file as the training corpus and self.vocab_pattern as the ngram model.
@@ -158,12 +145,9 @@ class Model():
 			for ngram in ngrams:
 				if self.v != 2 or ngram.isalpha():
 					# increment the count of this ngram
-					self.ngrams[lang][ngram] = self.ngrams[lang].get(ngram, 0) + 1
+					self.ngrams[lang][ngram] = self.ngrams[lang].get(ngram, self.delta) + 1
 					# increment the count of ngrams starting with ngram[0]
-					self.ngrams_total[lang][ngram[0]] = self.ngrams_total[lang].get(ngram[0], 0) + 1
-
-		if self.delta > 0:
-			self.__smooth_ngrams()
+					self.ngrams_total[lang][ngram[0]] = self.ngrams_total[lang].get(ngram[0], self.ngrams_total_increment) + 1
 
 		# convert values to probabilities
 		self.langs = {lang: count / tweet_count for lang, count in self.langs.items()}
@@ -345,36 +329,36 @@ if __name__ == "__main__":
 	file.close()
 	performance = ''
 
-	d = 0.001
-	while d < 0.1:
-		model = Model(4, 3, d, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
-		start = time.time()
-		model.train()
-		model.test()
-		end = time.time()
-		performance += str(model.v) + " " + str(model.n) + " " + str(model.delta) + "\ttime: " + str(end - start) + '\n'
-		d += 0.001
+	#d = 0.001
+	#while d < 0.1:
+	#	model = Model(4, 3, d, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
+	#	start = time.time()
+	#	model.train()
+	#	model.test()
+	#	end = time.time()
+	#	performance += str(model.v) + " " + str(model.n) + " " + str(model.delta) + "\ttime: " + str(end - start) + '\n'
+	#	d += 0.001
 
-	#for v in range(3, 5):
-	#	for n in range(1, 4):
-	#		model = Model(v, n, 0.0, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
-	#		start = time.time()
-	#		model.train()
-	#		model.test()
-	#		end = time.time()
-	#		performance += str(v) + " " + str(n) + " " + str(model.delta) + "\ttime: " + str(end - start) + '\n'
-	#		model = Model(v, n, 0.1, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
-	#		start = time.time()
-	#		model.train()
-	#		model.test()
-	#		end = time.time()
-	#		performance += str(v) + " " + str(n) + " " + str(model.delta) + "\ttime: " + str(end - start) + '\n'
-	#		model = Model(v, n, 0.2, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
-	#		start = time.time()
-	#		model.train()
-	#		model.test()
-	#		end = time.time()
-	#		performance += str(v) + " " + str(n) + " " + str(model.delta) + "\ttime: " + str(end - start) + '\n'
+	for v in range(5):
+		for n in range(1, 4):
+			model = Model(v, n, 0.0, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
+			start = time.time()
+			model.train()
+			model.test()
+			end = time.time()
+			performance += str(v) + " " + str(n) + " " + str(model.delta) + "\ttime: " + str(end - start) + '\n'
+			model = Model(v, n, 0.1, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
+			start = time.time()
+			model.train()
+			model.test()
+			end = time.time()
+			performance += str(v) + " " + str(n) + " " + str(model.delta) + "\ttime: " + str(end - start) + '\n'
+			model = Model(v, n, 0.2, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
+			start = time.time()
+			model.train()
+			model.test()
+			end = time.time()
+			performance += str(v) + " " + str(n) + " " + str(model.delta) + "\ttime: " + str(end - start) + '\n'
 
 	file = open("optim_perf.txt", 'w', encoding="utf-8")
 	file.write(performance)
