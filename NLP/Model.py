@@ -196,13 +196,13 @@ class Model():
 		classification : str
 			this model's classification of the tweet
 		"""
-		for lang in self.confusion_matrix:
-			if actual_lang != lang:
-				if classification != lang: self.confusion_matrix[lang]["tn"] += 1
-				else: self.confusion_matrix[lang]["fp"] += 1
+		for cm_lang in self.confusion_matrix:
+			if actual_lang != cm_lang:
+				if classification != cm_lang: self.confusion_matrix[cm_lang]["tn"] += 1
+				else: self.confusion_matrix[cm_lang]["fp"] += 1
 			else:
-				if classification != lang: self.confusion_matrix[lang]["fn"] += 1
-				else: self.confusion_matrix[lang]["tp"] += 1
+				if classification != cm_lang: self.confusion_matrix[cm_lang]["fn"] += 1
+				else: self.confusion_matrix[cm_lang]["tp"] += 1
 
 
 	def __generate_output_files(self, tweet_count):
@@ -214,9 +214,9 @@ class Model():
 		tweet_count : int
 			number of tweets in the testing file
 		"""
-		#file = open("trace_" + str(self.v) + "_" + str(self.n) + "_" + str(self.delta) + ".txt", 'w', encoding="utf-8")
-		#file.write(self.trace_output)
-		#file.close
+		file = open("trace_" + str(self.v) + "_" + str(self.n) + "_" + str(self.delta) + ".txt", 'w', encoding="utf-8")
+		file.write(self.trace_output)
+		file.close
 
 		precision = {"eu": 0, "ca": 0, "gl": 0, "es": 0, "en": 0, "pt": 0}
 		recall = {"eu": 0, "ca": 0, "gl": 0, "es": 0, "en": 0, "pt": 0}
@@ -252,12 +252,8 @@ class Model():
 		eval_output += str(number.format(f1["eu"])) + "  " + str(number.format(f1["ca"])) + "  " + str(number.format(f1["gl"])) + "  " + str(number.format(f1["es"])) + "  " + str(number.format(f1["en"])) + "  " + str(number.format(f1["pt"])) + '\n'
 		eval_output += str(number.format(macro_f1)) + "  " + str(number.format(weighted_avg_f1))
 
-		#file = open("eval_" + str(self.v) + "_" + str(self.n) + "_" + str(self.delta) + ".txt", 'w', encoding="utf-8")
-		#file.write(eval_output)
-		#file.close()
-
-		file = open("test.txt", 'a', encoding="utf-8")
-		file.write(str(self.v) + "\t\t" + str(self.n) + "\t\t" + str(self.delta) + "\t\t" + str(number.format(self.correct_classifications * 100 / tweet_count)) + "%\n")
+		file = open("eval_" + str(self.v) + "_" + str(self.n) + "_" + str(self.delta) + ".txt", 'w', encoding="utf-8")
+		file.write(eval_output)
 		file.close()
 
 	def __argmax(self, tweet):
@@ -325,47 +321,6 @@ class Model():
 		self.__generate_output_files(len(file_buffer))
 
 if __name__ == "__main__":
-	#model = Model(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), sys.argv[4], sys.argv[5])
-	#model.train()
-	#model.test()
-
-	###########################################testing/debugging#########################################
-	file = open("test.txt", 'w', encoding="utf-8")
-	file.write("v\t\tn\t\td\t\taccuracy\n")
-	file.close()
-	performance = ''
-
-	#d = 0.001
-	#while d < 0.1:
-	#	model = Model(4, 3, d, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
-	#	start = time.time()
-	#	model.train()
-	#	model.test()
-	#	end = time.time()
-	#	performance += str(model.v) + " " + str(model.n) + " " + str(model.delta) + "\ttime: " + str(end - start) + '\n'
-	#	d += 0.001
-
-	for v in range(5):
-		for n in range(1, 4):
-			model = Model(v, n, 0.0, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
-			start = time.time()
-			model.train()
-			model.test()
-			end = time.time()
-			performance += str(v) + " " + str(n) + " " + str(model.delta) + "\ttime: " + str(end - start) + '\n'
-			model = Model(v, n, 0.1, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
-			start = time.time()
-			model.train()
-			model.test()
-			end = time.time()
-			performance += str(v) + " " + str(n) + " " + str(model.delta) + "\ttime: " + str(end - start) + '\n'
-			model = Model(v, n, 0.2, "D:/Downloads/OriginalDataSet/training-tweets.txt", "D:/Downloads/OriginalDataSet/test-tweets-given.txt")
-			start = time.time()
-			model.train()
-			model.test()
-			end = time.time()
-			performance += str(v) + " " + str(n) + " " + str(model.delta) + "\ttime: " + str(end - start) + '\n'
-
-	file = open("optim_perf.txt", 'w', encoding="utf-8")
-	file.write(performance)
-	file.close()
+	model = Model(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), sys.argv[4], sys.argv[5])
+	model.train()
+	model.test()
