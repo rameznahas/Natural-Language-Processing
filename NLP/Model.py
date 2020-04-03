@@ -35,8 +35,10 @@ class Model():
 		self.delta = delta
 		self.training_file = training_file
 		self.testing_file = testing_file
+		self.prefix_idx = n - 1
 		self.ngrams = {"eu": {}, "ca": {}, "gl": {}, "es": {}, "en": {}, "pt": {}}
 		self.ngrams_total = {"eu": {}, "ca": {}, "gl": {}, "es": {}, "en": {}, "pt": {}}
+
 		self.langs = {"eu": 0, "ca": 0, "gl": 0, "es": 0, "en": 0, "pt": 0}
 		self.confusion_matrix = {
 			"eu": {"tn": 0, "fp": 0, "fn": 0, "tp": 0}, 
@@ -47,7 +49,7 @@ class Model():
 			"pt": {"tn": 0, "fp": 0, "fn": 0, "tp": 0}
 			}
 		self.__set_vocab()
-		self.ngrams_total_increment = self.delta * self.vocab_size ** (self.n - 1)
+		self.ngrams_total_increment = self.delta * self.vocab_size
 		self.trace_output = ''
 		self.correct_classifications = 0
 
@@ -144,10 +146,12 @@ class Model():
 			ngrams = self.vocab_pattern.findall(tweet)
 			for ngram in ngrams:
 				if self.v != 2 or ngram.isalpha():
+					# get the ngram prefix
+					prefix = ngram[0 : self.prefix_idx]
 					# increment the count of this ngram
 					self.ngrams[lang][ngram] = self.ngrams[lang].get(ngram, self.delta) + 1
-					# increment the count of ngrams starting with ngram[0]
-					self.ngrams_total[lang][ngram[0]] = self.ngrams_total[lang].get(ngram[0], self.ngrams_total_increment) + 1
+					# increment the total
+					self.ngrams_total[lang][prefix] = self.ngrams_total[lang].get(prefix, self.ngrams_total_increment) + 1
 
 		# convert values to probabilities
 		self.langs = {lang: count / tweet_count for lang, count in self.langs.items()}
@@ -155,7 +159,8 @@ class Model():
 		# convert values to probabilities
 		for lang in self.ngrams:
 			for ngram in self.ngrams[lang]:
-				self.ngrams[lang][ngram] /= self.ngrams_total[lang][ngram[0]]
+				prefix = ngram[0 : self.prefix_idx]
+				self.ngrams[lang][ngram] /= self.ngrams_total[lang][prefix]
 
 	def __trace_output(self, id, classification, score, actual):
 		"""
@@ -276,14 +281,15 @@ class Model():
 		classification = "xx" 
 		# get the list of all possible ngrams from the tweet
 		ngrams = self.vocab_pattern.findall(tweet)
-
+		smoothed_prob = 0
 		for lang in self.ngrams:
 			likelihood = 0
 
 			try:
 				for ngram in ngrams:
 					if self.v != 2 or ngram.isalpha():
-						smoothed_prob = self.delta / self.ngrams_total[lang].get(ngram[0], self.ngrams_total_increment)
+						prefix = ngram[0 : self.prefix_idx]
+						smoothed_prob = self.delta / self.ngrams_total[lang].get(prefix, self.ngrams_total_increment)
 						likelihood += log10(self.ngrams[lang].get(ngram, smoothed_prob))
 			except:
 				likelihood = float("-inf")
