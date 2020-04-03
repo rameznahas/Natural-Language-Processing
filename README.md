@@ -8,11 +8,9 @@
 https://github.com/rameznahas/Natural-Language-Processing
 
 ## How to run program (from command line):  
-```bash
 python Model.py [v] [n] [delta] [training_file] [testing_file]  
-[v]: (int) vocabulary to use, v = [0-4]  
-[n]: (int) size of the n-grams, n > 0  
-[delta]: (float) smoothing value, delta = [0.0-1.0]  
-[training_file]: (str) absolute path of the file used for training  
-[testing_file]: (str) absolute path of the file used for testing
-```
+*[v]: (int) vocabulary to use, v = [0-4]  
+*[n]: (int) size of the n-grams, n > 0  
+*[delta]: (float) smoothing value, delta = [0.0-1.0]  
+*[training_file]: (str) absolute path of the file used for training  
+*[testing_file]: (str) absolute path of the file used for testing
