@@ -6,14 +6,13 @@ class Model():
 	This class is a natural language processor based on the Naive Bayes classification and n-gram model. 
 	It classifies tweets according to their languages, as determined by this model.
 	"""
-
 	link_pattern = re.compile(r"(http|[@#])\S+")
 	cc_pattern = re.compile(r"\b[cC]{2}\b")
 	rt_pattern = re.compile(r"\b[rR][tT]\b")
 	punctuation_pattern = re.compile(r"[^\w\s]|_")
 	extra_ws_pattern = re.compile(r"\s{2,}")
 
-	def __init__(self, v, n, delta, training_file, testing_file):
+	def __init__(self, v, n, delta, training_file, testing_file, word_boundary):
 		"""
 		Parameterized constructor.
 
@@ -29,16 +28,17 @@ class Model():
 			indicates the file used for training the model
 		testing_file : str
 			indicates the file used for testing the model
+		word_boundary : str
+			indicates if word boundaries should be allowed as part of the n-gram
 		"""
-		self.v = v
-		self.n = n
-		self.delta = delta
+		self.v = int(v)
+		self.n = int(n)
+		self.delta = float(delta)
 		self.training_file = training_file
 		self.testing_file = testing_file
-		self.prefix_idx = n - 1
+		self.prefix_idx = self.n - 1
 		self.ngrams = {"eu": {}, "ca": {}, "gl": {}, "es": {}, "en": {}, "pt": {}}
 		self.ngrams_total = {"eu": {}, "ca": {}, "gl": {}, "es": {}, "en": {}, "pt": {}}
-
 		self.langs = {"eu": 0, "ca": 0, "gl": 0, "es": 0, "en": 0, "pt": 0}
 		self.confusion_matrix = {
 			"eu": {"tn": 0, "fp": 0, "fn": 0, "tp": 0}, 
@@ -48,24 +48,29 @@ class Model():
 			"en": {"tn": 0, "fp": 0, "fn": 0, "tp": 0}, 
 			"pt": {"tn": 0, "fp": 0, "fn": 0, "tp": 0}
 			}
-		self.__set_vocab()
+		self.__set_vocab(word_boundary)
 		self.ngrams_total_increment = self.delta * self.vocab_size
 		self.trace_output = ''
 		self.correct_classifications = 0
 
-	def __set_vocab(self):
+	def __set_vocab(self, word_boundary):
 		"""
 		Determines the pattern (for regex) and the size of the chosen vocabulary.
+
+		Parameters
+		----------
+		word_boundary : str
+			indicates if word boundaries should be allowed as part of the n-gram
 		"""
 		vocab = ''
 		a, z, A, Z = ord('a'), ord('z'), ord('A'), ord('Z')
 
 		if self.v == 0:
-			vocab = r"[a-z]"
+			vocab = r"[a-z"
 			self.vocab_size = 1 + z - a
 
 		elif self.v == 1: 
-			vocab = r"[a-zA-Z]"
+			vocab = r"[a-zA-Z"
 			self.vocab_size = 2 + z - a + Z - A
 
 		elif self.v == 2:
@@ -87,11 +92,12 @@ class Model():
 			diacritics_count = 34
 			self.vocab_size = 2 + z - a + Z - A + diacritics_count
 
-			if self.v == 3:
-				vocab += "]"
-			else:
+		if self.v != 2:
+			if word_boundary == "on":
 				vocab += " ]"
 				self.vocab_size += 1
+			else:
+				vocab += "]"
 			
 		self.vocab_pattern = re.compile(r"(?=(" + vocab + "{" + str(self.n) + "}))")
 
@@ -321,6 +327,6 @@ class Model():
 		self.__generate_output_files(len(file_buffer))
 
 if __name__ == "__main__":
-	model = Model(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), sys.argv[4], sys.argv[5])
+	model = Model(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
 	model.train()
 	model.test()

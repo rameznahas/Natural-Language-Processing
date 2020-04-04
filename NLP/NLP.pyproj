@@ -13,7 +13,7 @@
     <RootNamespace>NLP</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>1 2 0 "D:\Downloads\OriginalDataSet\training-tweets.txt" "D:\Downloads\OriginalDataSet\test-tweets-given.txt"</CommandLineArguments>
+    <CommandLineArguments>3 2 0 "D:\Downloads\OriginalDataSet\training-tweets.txt" "D:\Downloads\OriginalDataSet\test-tweets-given.txt" off</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
