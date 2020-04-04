@@ -49,7 +49,7 @@ class Model():
 			"en": {"tn": 0, "fp": 0, "fn": 0, "tp": 0}, 
 			"pt": {"tn": 0, "fp": 0, "fn": 0, "tp": 0}
 			}
-		self.__set_vocab(word_boundary)
+		self.__set_vocab()
 		self.ngrams_total_increment = self.delta * self.vocab_size
 		self.trace_output = ''
 		self.correct_classifications = 0
