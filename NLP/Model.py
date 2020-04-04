@@ -36,6 +36,7 @@ class Model():
 		self.delta = float(delta)
 		self.training_file = training_file
 		self.testing_file = testing_file
+		self.word_boundary = word_boundary
 		self.prefix_idx = self.n - 1
 		self.ngrams = {"eu": {}, "ca": {}, "gl": {}, "es": {}, "en": {}, "pt": {}}
 		self.ngrams_total = {"eu": {}, "ca": {}, "gl": {}, "es": {}, "en": {}, "pt": {}}
@@ -53,14 +54,9 @@ class Model():
 		self.trace_output = ''
 		self.correct_classifications = 0
 
-	def __set_vocab(self, word_boundary):
+	def __set_vocab(self):
 		"""
 		Determines the pattern (for regex) and the size of the chosen vocabulary.
-
-		Parameters
-		----------
-		word_boundary : str
-			indicates if word boundaries should be allowed as part of the n-gram
 		"""
 		vocab = ''
 		a, z, A, Z = ord('a'), ord('z'), ord('A'), ord('Z')
@@ -93,7 +89,7 @@ class Model():
 			self.vocab_size = 2 + z - a + Z - A + diacritics_count
 
 		if self.v != 2:
-			if word_boundary == "on":
+			if self.word_boundary == "on":
 				vocab += " ]"
 				self.vocab_size += 1
 			else:
@@ -220,7 +216,7 @@ class Model():
 		tweet_count : int
 			number of tweets in the testing file
 		"""
-		file = open("trace_" + str(self.v) + "_" + str(self.n) + "_" + str(self.delta) + ".txt", 'w', encoding="utf-8")
+		file = open("trace_" + str(self.v) + "_" + str(self.n) + "_" + str(self.delta) + "_" + self.word_boundary + ".txt", 'w', encoding="utf-8")
 		file.write(self.trace_output)
 		file.close
 
@@ -258,7 +254,7 @@ class Model():
 		eval_output += str(number.format(f1["eu"])) + "  " + str(number.format(f1["ca"])) + "  " + str(number.format(f1["gl"])) + "  " + str(number.format(f1["es"])) + "  " + str(number.format(f1["en"])) + "  " + str(number.format(f1["pt"])) + '\n'
 		eval_output += str(number.format(macro_f1)) + "  " + str(number.format(weighted_avg_f1))
 
-		file = open("eval_" + str(self.v) + "_" + str(self.n) + "_" + str(self.delta) + ".txt", 'w', encoding="utf-8")
+		file = open("eval_" + str(self.v) + "_" + str(self.n) + "_" + str(self.delta) + "_" + self.word_boundary + ".txt", 'w', encoding="utf-8")
 		file.write(eval_output)
 		file.close()
 
