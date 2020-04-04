@@ -7,7 +7,7 @@
 ## GitHub repo:  
 https://github.com/rameznahas/Natural-Language-Processing
 
-## How to run program (from command line):  
+## How to run the program (from command line):  
 python Model.py [v] [n] [delta] [training_file] [testing_file] [word_boundary]  
 * [v]: (int) vocabulary to use, v = [0-3] where v = 3 is our own vocabulary consisting of [a-zA-Z] + all the diacritics of the languages
 * [n]: (int) size of the n-grams, n > 0  
