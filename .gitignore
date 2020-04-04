@@ -7,3 +7,7 @@ Debug
 *.doc
 *.docx
 *.zip
+*.txt
+NLP/BYOM output files/
+NLP/Output files/
+*.pyproj
