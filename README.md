@@ -1,11 +1,5 @@
-<!-- ![alt text](https://github.com/rameznahas/Natural-Language-Processing/blob/master/Project%20Instructions/COMP_472_2020_Winter_Project_2-v2-1.png)
-![alt text](https://github.com/rameznahas/Natural-Language-Processing/blob/master/Project%20Instructions/COMP_472_2020_Winter_Project_2-v2-2.png)
-![alt text](https://github.com/rameznahas/Natural-Language-Processing/blob/master/Project%20Instructions/COMP_472_2020_Winter_Project_2-v2-3.png)
-![alt text](https://github.com/rameznahas/Natural-Language-Processing/blob/master/Project%20Instructions/COMP_472_2020_Winter_Project_2-v2-4.png)
-![alt text](https://github.com/rameznahas/Natural-Language-Processing/blob/master/Project%20Instructions/COMP_472_2020_Winter_Project_2-v2-5.png)
-![alt text](https://github.com/rameznahas/Natural-Language-Processing/blob/master/Project%20Instructions/COMP_472_2020_Winter_Project_2-v2-6.png) -->
-## GitHub repo:  
-https://github.com/rameznahas/Natural-Language-Processing
+# Naive Bayes Natural Language Processing 
+A simple NLP program that uses Naive Bayes classification.
 
 ## How to run the program:  
 (from the CLI)  
